@@ -50,22 +50,22 @@ const LoginPage: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('Form submitted!'); // Debug log
+    console.log("Form submitted!"); // Debug log
     e.preventDefault();
-    console.log('Default prevented!'); // Debug log
+    console.log("Default prevented!"); // Debug log
 
     if (!validateForm()) {
-      console.log('Form validation failed'); // Debug log
+      console.log("Form validation failed"); // Debug log
       return;
     }
 
-    console.log('Starting login process...'); // Debug log
+    console.log("Starting login process..."); // Debug log
     setLoading(true);
 
     try {
-      console.log('Calling login with:', formData.email); // Debug log
+      console.log("Calling login with:", formData.email); // Debug log
       await login(formData.email, formData.password);
-      console.log('Login successful, redirecting...'); // Debug log
+      console.log("Login successful, redirecting..."); // Debug log
       router.push(redirectTo);
     } catch (error: any) {
       // Error is already handled in the login function with toast

@@ -90,8 +90,8 @@ export const authAPI = {
     password: string;
     recaptchaToken?: string;
   }): Promise<AxiosResponse<ServiceResponse>> => {
-    console.log('API login called with baseURL:', `${API_BASE_URL}/api/v1`); // Debug log
-    console.log('Login data:', data); // Debug log
+    console.log("API login called with baseURL:", `${API_BASE_URL}/api/v1`); // Debug log
+    console.log("Login data:", data); // Debug log
     return api.post("/auth/login", data);
   },
 
