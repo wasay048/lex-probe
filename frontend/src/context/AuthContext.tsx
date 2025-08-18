@@ -140,9 +140,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = async (email: string, password: string) => {
     try {
+      console.log(
+        "procee.env.NEXT_PUBLIC_API_BASE_URL",
+        process.env.NEXT_PUBLIC_API_BASE_URL
+      );
+      console.log("AuthContext login called with:", email); // Debug log
       dispatch({ type: "AUTH_START" });
 
+      console.log("Making API call to authAPI.login"); // Debug log
       const response = await authAPI.login({ email, password });
+      console.log("API response received:", response); // Debug log
 
       if (response.data.success && response.data.data) {
         const { user, accessToken, refreshToken } = response.data.data;
@@ -153,6 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           id: user._id || user.id,
         };
 
+        console.log("Storing tokens and user data"); // Debug log
         // Store tokens and user data
         localStorage.setItem("accessToken", accessToken);
         if (refreshToken) {
@@ -163,9 +171,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         dispatch({ type: "AUTH_SUCCESS", payload: normalizedUser });
         toast.success("Logged in successfully");
       } else {
+        console.log("Login failed: Invalid response", response.data); // Debug log
         throw new Error(response.data.message || "Login failed");
       }
     } catch (error: any) {
+      console.log("Login error caught:", error); // Debug log
       const errorMessage =
         error.response?.data?.message || error.message || "Login failed";
       dispatch({ type: "AUTH_FAILURE", payload: errorMessage });

@@ -89,7 +89,11 @@ export const authAPI = {
     email: string;
     password: string;
     recaptchaToken?: string;
-  }): Promise<AxiosResponse<ServiceResponse>> => api.post("/auth/login", data),
+  }): Promise<AxiosResponse<ServiceResponse>> => {
+    console.log('API login called with baseURL:', `${API_BASE_URL}/api/v1`); // Debug log
+    console.log('Login data:', data); // Debug log
+    return api.post("/auth/login", data);
+  },
 
   logout: (): Promise<AxiosResponse<ServiceResponse>> =>
     api.post("/auth/logout"),
