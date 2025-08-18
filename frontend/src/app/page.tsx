@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function HomePage() {
+  console.log("API_BASE_URL", process.env.NEXT_PUBLIC_API_BASE_URL);
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-amber-50">
       {/* Navigation */}

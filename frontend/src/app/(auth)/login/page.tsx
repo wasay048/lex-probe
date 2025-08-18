@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 
 const LoginPage: React.FC = () => {
+  console.log("API_BASE_URL", process.env.NEXT_PUBLIC_API_BASE_URL);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
