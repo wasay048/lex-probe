@@ -37,7 +37,7 @@ const ForgotPasswordPage: React.FC = () => {
     setLoading(true);
 
     try {
-      await authAPI.forgotPassword(email);
+      await authAPI.forgotPassword({ email });
       setIsEmailSent(true);
       toast.success("Password reset instructions sent to your email");
     } catch (error: any) {
