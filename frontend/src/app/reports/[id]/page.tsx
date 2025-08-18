@@ -298,7 +298,7 @@ const ReportDetailPage: React.FC = () => {
                       Companies Analyzed
                     </p>
                     <p className="text-sm text-gray-600">
-                      {report.search.companyNames.join(", ")}
+                      {report.search.companyNames?.join(", ") || report.search.companies?.map((c) => c.name).join(", ") || "No companies specified"}
                     </p>
                   </div>
                 </div>

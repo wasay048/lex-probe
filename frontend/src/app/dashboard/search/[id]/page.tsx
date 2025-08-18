@@ -56,6 +56,21 @@ interface SearchResult {
     isSelected: boolean;
   }>;
   searchMode?: string;
+  projectId?: string;
+  project?: {
+    name: string;
+  };
+  projectName?: string;
+  analysisResults?: {
+    marketAnalysis?: any;
+    recommendations?: any[];
+    keyActions?: any[];
+    openSourceFindings?: {
+      webResults?: any[];
+      newsArticles?: any[];
+      summary?: any;
+    };
+  };
   results?: Array<{
     indicator: string;
     category: string;

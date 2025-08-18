@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { useSearch } from '../../hooks/useSearch';
-import { Input } from '../ui/Input';
-import { Button } from '../ui/Button';
+import useSearch from '../../hooks/useSearch';
+import Input from '../ui/Input';
+import Button from '../ui/Button';
 
 const SearchForm: React.FC = () => {
     const [companyName, setCompanyName] = useState('');
     const [website, setWebsite] = useState('');
     const [filters, setFilters] = useState({ industry: '', date: '' });
-    const { searchCompanies } = useSearch();
+    const { updateSearchParams } = useSearch();
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (companyName && website) {
-            searchCompanies({ companyName, website, filters });
+            updateSearchParams({ companies: [companyName], filters });
         }
     };
 

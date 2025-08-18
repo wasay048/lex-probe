@@ -72,7 +72,7 @@ const ProjectDetailPage: React.FC = () => {
   const loadProject = async () => {
     try {
       setLoading(true);
-      const response = await projectAPI.getProject(projectId);
+      const response = await projectAPI.getProjectById(projectId);
       setProject(response.data.data.project);
     } catch (error) {
       console.error("Failed to load project:", error);

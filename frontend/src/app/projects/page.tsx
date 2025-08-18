@@ -99,7 +99,7 @@ const ProjectsPage: React.FC = () => {
 
   const getAllTags = () => {
     const allTags = projects.flatMap((project) => project.tags || []);
-    return [...new Set(allTags)];
+    return Array.from(new Set(allTags));
   };
 
   const filteredProjects = projects.filter((project) => {
@@ -152,7 +152,7 @@ const ProjectsPage: React.FC = () => {
                 onChange={(e) => setTagFilter(e.target.value)}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">All Tags</option>
+                <option value="">All Tags</option>ui/Dashboard.tsx:3
                 {getAllTags().map((tag) => (
                   <option key={tag} value={tag}>
                     {tag}

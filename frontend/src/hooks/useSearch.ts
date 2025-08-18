@@ -1,23 +1,30 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { fetchSearchResults } from '../lib/api';
-import { SearchResult } from '../types/search';
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import fetchSearchResults from "../lib/api";
+import { SearchResult } from "../types/search";
 
 const useSearch = () => {
-  const [searchParams, setSearchParams] = useState<{ companies: string[]; filters: any }>({
+  const [searchParams, setSearchParams] = useState<{
+    companies: string[];
+    filters: any;
+  }>({
     companies: [],
     filters: {},
   });
 
-  const { data, isLoading, error } = useQuery<SearchResult[], Error>(
-    ['searchResults', searchParams],
-    () => fetchSearchResults(searchParams),
-    {
-      enabled: searchParams.companies.length > 1, // Only run query if at least two companies are provided
-    }
-  );
+  const { data, isLoading, error } = useQuery<SearchResult[], Error>({
+    queryKey: ["searchResults", searchParams],
+    queryFn: () =>
+      fetchSearchResults("/search", {
+        params: searchParams,
+      }),
+    enabled: searchParams.companies.length > 1, // Only run query if at least two companies are provided
+  });
 
-  const updateSearchParams = (newParams: { companies?: string[]; filters?: any }) => {
+  const updateSearchParams = (newParams: {
+    companies?: string[];
+    filters?: any;
+  }) => {
     setSearchParams((prev) => ({
       ...prev,
       ...newParams,

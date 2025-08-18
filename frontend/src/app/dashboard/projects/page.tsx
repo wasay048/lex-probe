@@ -250,7 +250,7 @@ const DashboardProjectsPage: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between mb-4">
-                    {getProjectStatusBadge(project.searchIds?.length || 0)}
+                    {getProjectStatusBadge(project.searches?.length || 0)}
                     <div className="flex items-center text-sm text-gray-500">
                       <CalendarIcon className="h-4 w-4 mr-1" />
                       {formatDate(project.createdAt)}
