@@ -44,7 +44,7 @@ class App {
     const corsOrigins = isDevelopment
       ? ["http://localhost:3000", "http://localhost:3001"]
       : config.CORS_ORIGIN;
-
+    console.log("corsOrigins", corsOrigins);
     this.app.use(
       cors({
         origin: corsOrigins,
