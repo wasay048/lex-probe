@@ -87,6 +87,87 @@ interface SearchResult {
   }>;
 }
 
+// Helper function for severity colors
+const getSeverityColor = (level: string) => {
+  switch (level) {
+    case "high":
+      return "bg-red-100 text-red-800";
+    case "medium":
+      return "bg-yellow-100 text-yellow-800";
+    case "low":
+      return "bg-green-100 text-green-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
+
+// Function to generate detailed descriptions as fallback
+const getDetailedDescription = (
+  indicator: string,
+  summary?: string
+): string => {
+  const descriptions: { [key: string]: string } = {
+    "Price Fixing": `Price fixing involves coordination between competitors to set, raise, or maintain prices at artificial levels. This cartel behavior eliminates price competition and harms consumers by keeping prices higher than they would be in a competitive market.
+
+Regulatory Implications: Price fixing is illegal under antitrust laws in most jurisdictions and can result in significant fines, criminal prosecution for individuals, and civil liability. Companies found guilty may face penalties up to 10% of annual turnover.
+
+Detection Indicators:
+• Identical or very similar pricing across competitors
+• Simultaneous price changes without market justification
+• Price announcements through trade publications
+• Evidence of pricing discussions between competitors`,
+
+    "Market Division": `Market division occurs when competitors divide up customers, territories, or product lines among themselves to avoid competition. This practice reduces consumer choice and can lead to higher prices and reduced innovation.
+
+Regulatory Implications: Market division agreements violate competition laws and can lead to substantial fines, forced divestitures, and ongoing regulatory oversight. Such practices are typically treated as per se violations in many jurisdictions.
+
+Detection Indicators:
+• Geographic territories with non-overlapping competitors
+• Customer allocation patterns
+• Exclusive dealing arrangements
+• Systematic absence of competition in specific regions`,
+
+    "Bid Rigging": `Bid rigging is a form of fraud where competitors conspire to manipulate the bidding process. Common schemes include cover bidding, bid suppression, and complementary bidding, all designed to predetermine the winning bid.
+
+Regulatory Implications: Bid rigging constitutes both antitrust violation and fraud, potentially resulting in criminal prosecution, debarment from government contracts, civil damages, and significant financial penalties.
+
+Detection Indicators:
+• Identical bid amounts or patterns
+• Rotation of winning bidders
+• Subcontracting between supposed competitors
+• Unusual bidding behaviors or withdrawals`,
+
+    "Suspicious benchmarking": `While legitimate benchmarking is normal, suspicious benchmarking involves coordinated price setting or strategic alignment that goes beyond normal competitive intelligence. This can indicate underlying cartel agreements.
+
+Regulatory Implications: Coordinated benchmarking that facilitates price alignment may violate competition laws. Regulators may require transparency measures and independent oversight of benchmarking activities.
+
+Detection Indicators:
+• Synchronized pricing based on benchmarking
+• Shared benchmarking methodologies
+• Regular competitor data sharing
+• Price alignment following benchmarking exercises`,
+
+    "Geographic clustering": `Geographic clustering combined with market division can indicate territorial allocation agreements between competitors. This practice reduces competition within specific regions and can lead to localized price inflation.
+
+Regulatory Implications: Geographic market division can result in market allocation violations, leading to structural remedies, behavioral constraints, and ongoing regulatory monitoring of market activities.
+
+Detection Indicators:
+• Clear territorial boundaries between competitors
+• Lack of competition in specific geographic areas
+• Coordinated market entry timing
+• Evidence of territory allocation discussions`,
+  };
+
+  return (
+    descriptions[indicator] ||
+    `${indicator} represents a potential cartel risk indicator that requires further investigation and regulatory attention.
+
+This indicator suggests patterns of behavior that may indicate anti-competitive coordination between market participants. Further analysis is recommended to determine if regulatory action is warranted.
+
+Detection requires comprehensive market analysis and evidence gathering to establish the scope and impact of potential anti-competitive behavior.`
+  );
+};
+
 const SearchDetailPage: React.FC = () => {
   const params = useParams();
   const router = useRouter();
@@ -675,6 +756,70 @@ const SearchDetailPage: React.FC = () => {
                       <p className="text-sm text-gray-600 mb-3">
                         {result.summary}
                       </p>
+
+                      {/* Detailed Description - Enhanced for cartel analysis */}
+                      {(result.detailedDescription || result.indicator) && (
+                        <div className="mb-4 bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <h5 className="text-sm font-semibold text-blue-900 mb-2 flex items-center">
+                            <svg
+                              className="w-4 h-4 mr-1"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            Detailed Analysis & Regulatory Context
+                          </h5>
+                          <div className="text-sm text-blue-800 whitespace-pre-line">
+                            {result.detailedDescription ||
+                              getDetailedDescription(
+                                result.indicator,
+                                result.summary
+                              )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Risk Contribution - if available */}
+                      {result.riskContribution && (
+                        <div className="mb-3">
+                          <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                            <span>Risk Contribution</span>
+                            <span>{result.riskContribution}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-red-500 h-2 rounded-full"
+                              style={{ width: `${result.riskContribution}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Company Information */}
+                      {result.companyName && (
+                        <div className="mb-3">
+                          <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-indigo-100 text-indigo-800">
+                            <svg
+                              className="w-3 h-3 mr-1"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            {result.companyName}
+                          </span>
+                        </div>
+                      )}
                       {result.evidence && result.evidence.length > 0 && (
                         <div>
                           <p className="text-xs font-medium text-gray-700 mb-2">

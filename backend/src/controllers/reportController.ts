@@ -233,7 +233,7 @@ export class ReportController {
 
       const result = await this.reportService.downloadReport(
         reportId,
-        req.user.id
+        req.user._id.toString()
       );
 
       if (!result.success) {

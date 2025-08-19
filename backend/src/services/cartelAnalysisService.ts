@@ -52,6 +52,8 @@ interface CartelRiskAssessment {
   };
   recommendations: string[];
   alertLevel: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  results?: any[]; // Frontend-compatible search results
+  analysisResults?: any; // Full comprehensive analysis
   comprehensiveAnalysis: {
     marketAnalysis: {
       totalMarketSize?: string;
@@ -264,11 +266,27 @@ export class CartelAnalysisService {
 
     Indicators to analyze: ${indicators.join(", ")}
 
-    For each indicator, provide:
+    For each indicator, provide comprehensive analysis including:
     1. detected (boolean): Whether the indicator was detected
     2. confidence (0-1): Confidence level in the detection
     3. evidence (array): Specific pieces of evidence found
-    4. details (string): Detailed explanation
+    4. details (string): Detailed explanation of what this indicator means, why it's concerning, and specific evidence found
+    5. riskContribution (number): How much this indicator contributes to overall cartel risk (0-100)
+
+    IMPORTANT: For the 'details' field, provide comprehensive explanations that include:
+    - What this specific risk indicator means in cartel detection context
+    - Why this behavior pattern is concerning from an antitrust perspective
+    - Specific evidence found in the company data that supports this finding
+    - Potential regulatory implications
+    - How this relates to known cartel detection methodologies
+
+    Common indicators to analyze in detail:
+    - Price Fixing: Coordinated pricing strategies, identical price points, simultaneous price changes
+    - Market Division: Geographic territories, customer allocation, exclusive dealing arrangements
+    - Bid Rigging: Suspicious bidding patterns, cover bidding, complementary bidding
+    - Output Restrictions: Production quotas, capacity limitations, supply constraints
+    - Information Exchange: Sharing of sensitive commercial information, joint ventures
+    - Suspicious Communication: Regular meetings, trade association activities, cross-shareholdings
 
     Also provide:
     - Overall risk score (0-100)
@@ -283,7 +301,8 @@ export class CartelAnalysisService {
           "detected": boolean,
           "confidence": number,
           "evidence": ["evidence1", "evidence2"],
-          "details": "detailed explanation"
+          "details": "comprehensive detailed explanation including definition, evidence, and regulatory implications",
+          "riskContribution": number
         }
       },
       "summary": "overall summary",
@@ -2168,7 +2187,30 @@ CRITICAL: Analyze ALL ${
       );
     }
 
-    return enhancedAssessment;
+    // Generate frontend-compatible search results
+    const searchResults =
+      this.convertAnalysisToSearchResults(enhancedAssessment);
+
+    // Debug logging
+    logger.info(`Generated ${searchResults.length} search results`);
+    if (searchResults.length > 0) {
+      logger.info(
+        `First result has detailedDescription: ${!!searchResults[0]
+          .detailedDescription}`
+      );
+      logger.info(
+        `First result detailedDescription length: ${
+          searchResults[0].detailedDescription?.length || 0
+        }`
+      );
+    }
+
+    // Return enhanced assessment with proper results format
+    return {
+      ...enhancedAssessment,
+      results: searchResults, // Frontend-compatible results
+      analysisResults: enhancedAssessment, // Full analysis for detailed view
+    };
   }
 
   private isRelevantEvidence(
@@ -2244,6 +2286,215 @@ CRITICAL: Analyze ALL ${
       barrierToEntry: "Medium",
       regulatoryEnvironment: "Active monitoring recommended",
     };
+  }
+
+  /**
+   * Convert comprehensive analysis results to frontend-compatible search results format
+   */
+  private convertAnalysisToSearchResults(
+    assessment: CartelRiskAssessment
+  ): any[] {
+    const searchResults = [];
+
+    logger.info(
+      `Converting analysis to search results. Companies: ${
+        assessment.companiesAnalysis?.length || 0
+      }`
+    );
+
+    // Process each company's analysis
+    for (const companyAnalysis of assessment.companiesAnalysis || []) {
+      logger.info(`Processing company: ${companyAnalysis.companyName}`);
+      logger.info(
+        `Company indicators:`,
+        JSON.stringify(companyAnalysis.indicators, null, 2)
+      );
+
+      if (companyAnalysis.indicators) {
+        // Process each indicator for this company
+        for (const [indicatorName, indicatorData] of Object.entries(
+          companyAnalysis.indicators
+        )) {
+          if (typeof indicatorData === "object" && indicatorData !== null) {
+            const indicator = indicatorData as any;
+
+            logger.info(
+              `Processing indicator: ${indicatorName}, detected: ${indicator.detected}`
+            );
+
+            // Only include detected indicators
+            if (indicator.detected) {
+              const detailedDescription = this.generateDetailedDescription(
+                indicatorName,
+                indicator,
+                companyAnalysis.companyName
+              );
+
+              logger.info(
+                `Generated detailed description length: ${detailedDescription.length}`
+              );
+
+              searchResults.push({
+                indicator: indicatorName,
+                category: this.getIndicatorCategory(indicatorName),
+                riskScore: Math.min(
+                  5,
+                  Math.max(
+                    1,
+                    Math.round((indicator.riskContribution || 50) / 20)
+                  )
+                ), // Convert 0-100 to 1-5 scale
+                confidence: indicator.confidence,
+                evidence: this.formatEvidenceForFrontend(
+                  indicator.evidence,
+                  companyAnalysis.companyName
+                ),
+                summary:
+                  indicator.details ||
+                  `${indicatorName} detected for ${companyAnalysis.companyName}`,
+                detailedDescription,
+                companyName: companyAnalysis.companyName,
+                riskContribution: indicator.riskContribution || 50,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    logger.info(`Total search results generated: ${searchResults.length}`);
+
+    // Sort by risk score and confidence
+    return searchResults.sort((a, b) => {
+      if (a.riskScore !== b.riskScore) {
+        return b.riskScore - a.riskScore; // Higher risk first
+      }
+      return b.confidence - a.confidence; // Higher confidence first
+    });
+  }
+
+  /**
+   * Generate detailed descriptions for each risk indicator
+   */
+  private generateDetailedDescription(
+    indicatorName: string,
+    indicatorData: any,
+    companyName: string
+  ): string {
+    const baseDescriptions: { [key: string]: string } = {
+      "Price Fixing": `Price fixing involves coordination between competitors to set, raise, or maintain prices at artificial levels. This cartel behavior eliminates price competition and harms consumers by keeping prices higher than they would be in a competitive market.`,
+
+      "Market Division": `Market division occurs when competitors divide up customers, territories, or product lines among themselves to avoid competition. This practice reduces consumer choice and can lead to higher prices and reduced innovation.`,
+
+      "Bid Rigging": `Bid rigging is a form of fraud where competitors conspire to manipulate the bidding process. Common schemes include cover bidding, bid suppression, and complementary bidding, all designed to predetermine the winning bid.`,
+
+      "Output Restrictions": `Output restrictions involve agreements to limit production or supply to maintain higher prices. This cartel behavior artificially creates scarcity in the market, leading to inflated prices and reduced consumer welfare.`,
+
+      "Information Exchange": `Suspicious information exchange between competitors can facilitate cartel coordination. When companies share sensitive commercial data like prices, costs, or strategic plans, it can enable price fixing and market allocation.`,
+
+      "Suspicious Communication": `Regular communication patterns between competitors, especially through trade associations or informal meetings, can indicate cartel coordination. Such communication may facilitate price fixing, market division, or other anti-competitive practices.`,
+
+      "Suspicious benchmarking": `While legitimate benchmarking is normal, suspicious benchmarking involves coordinated price setting or strategic alignment that goes beyond normal competitive intelligence. This can indicate underlying cartel agreements.`,
+
+      "Geographic clustering": `Geographic clustering combined with market division can indicate territorial allocation agreements between competitors. This practice reduces competition within specific regions and can lead to localized price inflation.`,
+    };
+
+    const baseDescription =
+      baseDescriptions[indicatorName] ||
+      `${indicatorName} represents a potential cartel risk indicator that requires further investigation and regulatory attention.`;
+
+    const specificEvidence =
+      indicatorData.evidence && indicatorData.evidence.length > 0
+        ? `\n\nSpecific Evidence Found for ${companyName}:\n• ${indicatorData.evidence.join(
+            "\n• "
+          )}`
+        : "";
+
+    const confidenceNote = `\n\nDetection Confidence: ${Math.round(
+      indicatorData.confidence * 100
+    )}%`;
+
+    const riskNote = indicatorData.riskContribution
+      ? `\nRisk Contribution: This indicator contributes ${indicatorData.riskContribution}% to the overall cartel risk assessment.`
+      : "";
+
+    const regulatoryImplication = this.getRegulatoryImplication(indicatorName);
+
+    return `${baseDescription}${specificEvidence}${confidenceNote}${riskNote}\n\n${regulatoryImplication}`;
+  }
+
+  /**
+   * Get regulatory implications for each indicator type
+   */
+  private getRegulatoryImplication(indicatorName: string): string {
+    const implications: { [key: string]: string } = {
+      "Price Fixing":
+        "Regulatory Implications: Price fixing is illegal under antitrust laws in most jurisdictions and can result in significant fines, criminal prosecution for individuals, and civil liability. Companies found guilty may face penalties up to 10% of annual turnover.",
+
+      "Market Division":
+        "Regulatory Implications: Market division agreements violate competition laws and can lead to substantial fines, forced divestitures, and ongoing regulatory oversight. Such practices are typically treated as per se violations in many jurisdictions.",
+
+      "Bid Rigging":
+        "Regulatory Implications: Bid rigging constitutes both antitrust violation and fraud, potentially resulting in criminal prosecution, debarment from government contracts, civil damages, and significant financial penalties.",
+
+      "Output Restrictions":
+        "Regulatory Implications: Output restriction agreements are serious antitrust violations that can result in hefty fines, structural remedies to restore competition, and potential criminal sanctions for involved executives.",
+
+      "Information Exchange":
+        "Regulatory Implications: While some information sharing may be legitimate, suspicious patterns can violate antitrust laws. Regulators may impose compliance programs, monitoring requirements, and penalties depending on the scope and intent.",
+
+      "Suspicious Communication":
+        "Regulatory Implications: Regular coordination between competitors can constitute evidence of broader cartel activity. Regulators may launch dawn raids, request extensive documentation, and impose behavioral remedies.",
+
+      "Suspicious benchmarking":
+        "Regulatory Implications: Coordinated benchmarking that facilitates price alignment may violate competition laws. Regulators may require transparency measures and independent oversight of benchmarking activities.",
+
+      "Geographic clustering":
+        "Regulatory Implications: Geographic market division can result in market allocation violations, leading to structural remedies, behavioral constraints, and ongoing regulatory monitoring of market activities.",
+    };
+
+    return (
+      implications[indicatorName] ||
+      "Regulatory Implications: This indicator warrants regulatory investigation and may result in enforcement action if cartel behavior is confirmed."
+    );
+  }
+
+  /**
+   * Format evidence for frontend display
+   */
+  private formatEvidenceForFrontend(
+    evidence: string[] | undefined,
+    companyName: string
+  ): any[] {
+    if (!evidence || !Array.isArray(evidence)) {
+      return [];
+    }
+
+    return evidence.map((item, index) => ({
+      source: `Analysis Evidence ${index + 1}`,
+      url: "#", // Placeholder - could link to detailed analysis
+      content: item,
+      timestamp: new Date(),
+      relevanceScore: 0.8, // Default relevance score
+    }));
+  }
+
+  /**
+   * Get category for indicator
+   */
+  private getIndicatorCategory(indicatorName: string): string {
+    const categories: { [key: string]: string } = {
+      "Price Fixing": "Pricing Coordination",
+      "Market Division": "Market Allocation",
+      "Bid Rigging": "Bidding Manipulation",
+      "Output Restrictions": "Supply Control",
+      "Information Exchange": "Communication",
+      "Suspicious Communication": "Communication",
+      "Suspicious benchmarking": "Pricing Coordination",
+      "Geographic clustering": "Market Allocation",
+    };
+
+    return categories[indicatorName] || "Other";
   }
 
   private async generatePricingAnalysis(pricingData: any[]) {

@@ -970,17 +970,30 @@ ${JSON.stringify(
     userId: string
   ): Promise<ServiceResponse> {
     try {
+      logger.info(
+        `Download report request - reportId: ${reportId}, userId: ${userId}`
+      );
+
       const report = await this.reportRepository.findById(reportId);
 
       if (!report) {
+        logger.warn(`Report not found: ${reportId}`);
         return {
           success: false,
           message: "Report not found",
         };
       }
 
+      logger.info(
+        `Report found - reportId: ${reportId}, reportUserId: ${report.userId}, requestUserId: ${userId}`
+      );
+
       // Check access permissions
       const user = await this.userRepository.findById(userId);
+
+      logger.info(`User found: ${!!user}, userEmail: ${user?.email}`);
+      logger.info(`Report sharedWith: ${JSON.stringify(report.sharedWith)}`);
+
       const hasAccess =
         report.userId.toString() === userId ||
         report.sharedWith.some(
@@ -989,7 +1002,16 @@ ${JSON.stringify(
             (!share.expiresAt || share.expiresAt > new Date())
         );
 
+      logger.info(
+        `Access check - hasAccess: ${hasAccess}, userIdMatch: ${
+          report.userId.toString() === userId
+        }`
+      );
+
       if (!hasAccess) {
+        logger.warn(
+          `Unauthorized access attempt - reportId: ${reportId}, userId: ${userId}`
+        );
         return {
           success: false,
           message: "Unauthorized access to report",
