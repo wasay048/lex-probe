@@ -950,7 +950,7 @@ const NewSearchPage: React.FC = () => {
                       name: e.target.value,
                     }))
                   }
-                  disabled={loading}
+                  disabled={loading || formData.companies.length >= 2}
                   label="Company Name"
                 />
                 <Input
@@ -965,7 +965,7 @@ const NewSearchPage: React.FC = () => {
                   onKeyPress={(e) =>
                     e.key === "Enter" && (e.preventDefault(), addCompany())
                   }
-                  disabled={loading}
+                  disabled={loading || formData.companies.length >= 2}
                   label="Company Website"
                 />
               </div>
@@ -1022,7 +1022,7 @@ const NewSearchPage: React.FC = () => {
                           disabled={loading}
                           title="Remove company"
                         >
-                          <XMarkIcon className="h-5 w-5" />
+                          <XMarkIcon className="h-5 w-5 text-red-600" />
                         </button>
                       </div>
                     ))}

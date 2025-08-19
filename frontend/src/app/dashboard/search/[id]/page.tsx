@@ -331,9 +331,15 @@ const SearchDetailPage: React.FC = () => {
 
         if (!createResponse.data.success) {
           throw new Error("Failed to create project");
+        } else {
+          await projectAPI.addSearchToProject(
+            createResponse?.data?.data?.project?._id,
+            search._id
+          );
+          toast.success("Search saved to project successfully");
+          setShowSaveDialog(false);
+          return;
         }
-
-        projectId = createResponse.data.data._id;
       }
 
       if (!projectId) {
@@ -1508,7 +1514,9 @@ const SearchDetailPage: React.FC = () => {
                       !saveProjectData.newProjectName.trim())
                   }
                 >
-                  {saveToProjectLoading ? "Saving..." : "Save to Project"}
+                  {saveToProjectLoading
+                    ? "Saving..."
+                    : `${saveProjectData.createNew ? "Create Project" : "Save to Project"}`}
                 </Button>
               </div>
             </div>
