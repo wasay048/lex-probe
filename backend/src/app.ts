@@ -25,6 +25,7 @@ class App {
   }
 
   private initializeMiddleware(): void {
+    console.log("security middleware");
     // Security middleware
     this.app.use(
       helmet({
@@ -44,13 +45,49 @@ class App {
     const corsOrigins = isDevelopment
       ? ["http://localhost:3000", "http://localhost:3001"]
       : config.CORS_ORIGIN;
-    console.log("corsOrigins", corsOrigins);
+
+    console.log("isDevelopment:", isDevelopment);
+    console.log("config.CORS_ORIGIN raw:", config.CORS_ORIGIN);
+    console.log("corsOrigins type:", typeof corsOrigins);
+    console.log("corsOrigins value:", corsOrigins);
+
+    // Convert to array if it's a string
+    const originsArray =
+      typeof corsOrigins === "string"
+        ? corsOrigins.split(",").map((origin) => origin.trim())
+        : corsOrigins;
+
+    console.log("Final origins array:", originsArray);
+
     this.app.use(
       cors({
-        origin: corsOrigins,
+        origin: (origin, callback) => {
+          console.log(`Incoming origin: ${origin}`);
+
+          // Allow requests with no origin (mobile apps, Postman, etc.)
+          if (!origin) {
+            console.log("No origin - allowing request");
+            return callback(null, true);
+          }
+
+          if (originsArray.includes(origin)) {
+            console.log(`Origin allowed: ${origin}`);
+            return callback(null, true);
+          } else {
+            console.log(`Origin blocked: ${origin}`);
+            console.log(`Allowed origins: ${originsArray.join(", ")}`);
+            return callback(new Error("Not allowed by CORS"), false);
+          }
+        },
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+        allowedHeaders: [
+          "Content-Type",
+          "Authorization",
+          "X-Requested-With",
+          "Origin",
+          "Accept",
+        ],
       })
     );
 
