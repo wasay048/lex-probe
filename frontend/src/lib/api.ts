@@ -241,8 +241,8 @@ export const reportAPI = {
   getReport: (id: string): Promise<AxiosResponse<ServiceResponse>> =>
     api.get(`/reports/${id}`),
 
-  downloadReport: (id: string): Promise<AxiosResponse<Blob>> =>
-    api.get(`/reports/${id}/download`, { responseType: "blob" }),
+  downloadReport: (reportId: string) =>
+    api.get(`/reports/${reportId}/download`),
 
   updateReport: (
     id: string,

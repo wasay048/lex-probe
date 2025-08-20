@@ -102,18 +102,21 @@ const ReportsPage: React.FC = () => {
   const handleDownload = async (reportId: string) => {
     try {
       setDownloading(reportId);
-      const response = await reportAPI.downloadReport(reportId);
 
-      // Create blob and download
-      const blob = new Blob([response.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
+      // Now this is JSON
+      const response = await reportAPI.downloadReport(reportId);
+      const { url, filename } = response.data.data;
+
+      if (!url) {
+        throw new Error("Signed URL not received");
+      }
+
       const link = document.createElement("a");
       link.href = url;
-      link.download = `report-${reportId}.pdf`;
+      link.download = filename || `report-${reportId}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
 
       toast.success("Report downloaded successfully");
     } catch (error) {

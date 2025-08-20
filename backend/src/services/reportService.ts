@@ -8,6 +8,7 @@ import path from "path";
 import fs from "fs/promises";
 import puppeteer from "puppeteer";
 import { Types } from "mongoose";
+import { getSignedUrlFromS3, uploadToS3 } from "@/utils/uploadToS3";
 
 export interface GenerateReportRequest {
   userId: string;
@@ -207,31 +208,45 @@ export class ReportService {
 
       let filePath: string;
       let fileSize: number;
-
+      console.log(`[Report Generation] format ${report.format}`);
       switch (report.format) {
         case "pdf":
-          filePath = await this.generatePDF(
+          const pdfData = await this.generatePDF(
             reportContent,
             report._id.toString()
           );
+          filePath = pdfData.fileUrl;
+          fileSize = parseFloat(pdfData.fileSize);
           break;
         case "html":
           filePath = await this.generateHTML(
             reportContent,
             report._id.toString()
           );
+          // Get file size for HTML
+          try {
+            const stats = await fs.stat(filePath);
+            fileSize = stats.size;
+          } catch {
+            fileSize = 0;
+          }
           break;
         case "json":
           filePath = await this.generateJSON(search, report._id.toString());
+          // Get file size for JSON
+          try {
+            const stats = await fs.stat(filePath);
+            fileSize = stats.size;
+          } catch {
+            fileSize = 0;
+          }
           break;
         default:
           throw new Error(`Unsupported format: ${report.format}`);
       }
-
-      // Get file size
-      const stats = await fs.stat(filePath);
-      fileSize = stats.size;
-
+      console.log(
+        `[Report Generation] File generated: ${filePath}, Size: ${fileSize} bytes`
+      );
       // Update report with file information
       await this.reportRepository.update(report._id.toString(), {
         status: "completed",
@@ -243,6 +258,9 @@ export class ReportService {
         },
       });
 
+      console.log(
+        `[Report Generation] Report updated in database: ${report._id}`
+      );
       // Notify user
       const user = await this.userRepository.findById(report.userId.toString());
       if (user?.email) {
@@ -806,7 +824,7 @@ ${JSON.stringify(
   private async generatePDF(
     content: string,
     reportId: string
-  ): Promise<string> {
+  ): Promise<{ fileUrl: string; fileSize: string }> {
     const browser = await puppeteer.launch({
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -816,13 +834,8 @@ ${JSON.stringify(
       const page = await browser.newPage();
       await page.setContent(content, { waitUntil: "networkidle0" });
 
-      const reportsDir = path.join(process.cwd(), "reports");
-      await fs.mkdir(reportsDir, { recursive: true });
-
-      const filePath = path.join(reportsDir, `${reportId}.pdf`);
-
-      await page.pdf({
-        path: filePath,
+      // Generate PDF as Buffer
+      const pdfData = await page.pdf({
         format: "A4",
         printBackground: true,
         margin: {
@@ -834,13 +847,25 @@ ${JSON.stringify(
         displayHeaderFooter: true,
         headerTemplate: "<div></div>",
         footerTemplate: `
-          <div style="width: 100%; text-align: center; font-size: 10px; color: #666;">
-            Page <span class="pageNumber"></span> of <span class="totalPages"></span>
-          </div>
-        `,
+        <div style="width: 100%; text-align: center; font-size: 10px; color: #666;">
+          Page <span class="pageNumber"></span> of <span class="totalPages"></span>
+        </div>
+      `,
       });
 
-      return filePath;
+      // Convert Uint8Array → Buffer
+      const pdfBuffer = Buffer.from(pdfData);
+
+      const fileSizeInBytes = pdfBuffer.length;
+
+      // Convert to KB / MB if needed
+      const fileSizeInKB = (fileSizeInBytes / 1024).toFixed(2);
+
+      // Upload to S3
+      const s3Key = `reports/${reportId}.pdf`;
+      const fileUrl = await uploadToS3(pdfBuffer, s3Key);
+
+      return { fileUrl, fileSize: fileSizeInKB };
     } finally {
       await browser.close();
     }
@@ -993,8 +1018,12 @@ ${JSON.stringify(
 
       logger.info(`User found: ${!!user}, userEmail: ${user?.email}`);
       logger.info(`Report sharedWith: ${JSON.stringify(report.sharedWith)}`);
+      console.log(report.userId._id.toString(), userId);
+      const isOwner = report.userId._id.toString() === userId;
+      logger.info(`Is owner: ${isOwner}`);
 
       const hasAccess =
+        isOwner ||
         report.userId.toString() === userId ||
         report.sharedWith.some(
           (share) =>
@@ -1026,21 +1055,42 @@ ${JSON.stringify(
       }
 
       // Check if file exists
+      let signedUrl: string;
       try {
-        await fs.access(report.filePath);
+        let key = report.filePath;
+
+        // if full URL is stored, extract just the path
+        if (key.startsWith("http")) {
+          const url = new URL(key);
+          key = url.pathname.startsWith("/")
+            ? url.pathname.slice(1)
+            : url.pathname;
+        }
+        signedUrl = await getSignedUrlFromS3(key);
+        // signedUrl = await getSignedUrlFromS3(
+        //   "reports/68a63ae2ff526b595f04080d.pdf"
+        // );
       } catch {
+        if (!isOwner) {
+          return {
+            success: false,
+            message: "Report file not found",
+          };
+        }
+
+        logger.warn(
+          `Owner downloading report without valid S3 file - reportId: ${reportId}, userId: ${userId}`
+        );
         return {
           success: false,
-          message: "Report file not found",
+          message: "Report file not found in S3",
         };
       }
 
       // Update download count
       await this.reportRepository.updateDownloadCount(reportId);
-
-      // Read file
-      const buffer = await fs.readFile(report.filePath);
       const filename = `report-${reportId}.${report.format}`;
+      // Read file
 
       let mimeType = "application/octet-stream";
       switch (report.format) {
@@ -1059,7 +1109,7 @@ ${JSON.stringify(
         success: true,
         message: "Report downloaded successfully",
         data: {
-          buffer,
+          url: signedUrl,
           filename,
           mimeType,
         },

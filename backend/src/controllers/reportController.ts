@@ -241,16 +241,20 @@ export class ReportController {
         return;
       }
 
-      // Set headers for file download
-      res.setHeader("Content-Type", result.data.mimeType);
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${result.data.filename}"`
+      // ✅ With signed URL, just return JSON
+      logger.info(
+        `Report download link generated: ${reportId} by user: ${req.user.email}`
       );
-      res.setHeader("Content-Length", result.data.buffer.length);
 
-      logger.info(`Report downloaded: ${reportId} by user: ${req.user.email}`);
-      res.send(result.data.buffer);
+      res.json({
+        success: true,
+        message: result.message,
+        data: {
+          url: result.data.url, // signed URL
+          filename: result.data.filename,
+          mimeType: result.data.mimeType,
+        },
+      });
     } catch (error) {
       logger.error("Download report error:", error);
       res.status(500).json({

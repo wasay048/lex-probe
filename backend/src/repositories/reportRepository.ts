@@ -58,7 +58,7 @@ export class ReportRepository implements IReportRepository {
   async findById(reportId: string): Promise<IReport | null> {
     try {
       const report = await Report.findById(reportId)
-        .populate("userId", "firstName lastName email")
+        .populate("userId", "firstName lastName email _id")
         .populate({
           path: "searchId",
           select: "companies overallRiskScore status createdAt",

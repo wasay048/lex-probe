@@ -71,22 +71,27 @@ const ReportDetailPage: React.FC = () => {
   };
 
   const handleDownload = async () => {
-    if (!report) return;
-
     try {
       setDownloading(true);
-      const response = await reportAPI.downloadReport(report._id);
 
-      // Create blob and download
-      const blob = new Blob([response.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
+      // Get JSON from backend
+      const response = await reportAPI.downloadReport(reportId);
+
+      // ✅ response.data is the JSON object
+      const { url, filename } = response.data.data;
+
+      if (!url) {
+        throw new Error("Signed URL not received");
+      }
+
+      // Let browser download directly from S3
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${report.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.${report.format}`;
+      link.download = filename || `report-${reportId}.pdf`;
+      link.target = "_blank"; // optional, ensures it works across browsers
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
 
       toast.success("Report downloaded successfully");
     } catch (error) {
@@ -298,7 +303,11 @@ const ReportDetailPage: React.FC = () => {
                       Companies Analyzed
                     </p>
                     <p className="text-sm text-gray-600">
-                      {report.search.companyNames?.join(", ") || report.search.companies?.map((c) => c.name).join(", ") || "No companies specified"}
+                      {report.search.companyNames?.join(", ") ||
+                        report.search.companies
+                          ?.map((c) => c.name)
+                          .join(", ") ||
+                        "No companies specified"}
                     </p>
                   </div>
                 </div>
