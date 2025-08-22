@@ -15,8 +15,21 @@ class App {
   public app: express.Application;
   private port: number;
 
+  // constructor() {
+  //   this.app = express();
+  //   this.port = config.PORT;
+
+  //   this.initializeMiddleware();
+  //   this.initializeRoutes();
+  //   this.initializeErrorHandling();
+  //   this.connectDatabase();
+  // }
   constructor() {
     this.app = express();
+
+    // Trust proxy for correct client IP (important for rate limiting and CORS behind Nginx/ELB)
+    this.app.set("trust proxy", 1);
+
     this.port = config.PORT;
 
     this.initializeMiddleware();
