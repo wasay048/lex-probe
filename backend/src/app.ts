@@ -42,36 +42,44 @@ class App {
     );
 
     // CORS configuration
-    const corsOrigins = isDevelopment
-      ? ["http://localhost:3000", "http://localhost:3001"]
-      : config.CORS_ORIGIN;
+    // const corsOrigins = isDevelopment
+    //   ? ["http://localhost:3000", "http://localhost:3001"]
+    //   : config.CORS_ORIGIN;
 
-    console.log("isDevelopment:", isDevelopment);
-    console.log("config.CORS_ORIGIN raw:", config.CORS_ORIGIN);
-    console.log("corsOrigins type:", typeof corsOrigins);
-    console.log("corsOrigins value:", corsOrigins);
+    // console.log("isDevelopment:", isDevelopment);
+    // console.log("config.CORS_ORIGIN raw:", config.CORS_ORIGIN);
+    // console.log("corsOrigins type:", typeof corsOrigins);
+    // console.log("corsOrigins value:", corsOrigins);
 
-    // Convert to array if it's a string
-    const originsArray =
-      typeof corsOrigins === "string"
-        ? corsOrigins.split(",").map((origin) => origin.trim())
-        : corsOrigins;
+    // // Convert to array if it's a string
+    // const originsArray =
+    //   typeof corsOrigins === "string"
+    //     ? corsOrigins.split(",").map((origin) => origin.trim())
+    //     : corsOrigins;
 
-    console.log("Final origins array:", originsArray);
+    // console.log("Final origins array:", originsArray);
+
     this.app.use(
       cors({
-        origin: "*",
-        // credentials: true,
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: [
-          "Content-Type",
-          "Authorization",
-          "X-Requested-With",
-          "Origin",
-          "Accept",
-        ],
+        origin: "https://www.lexprobe.com",
+        credentials: true,
       })
     );
+
+    // this.app.use(
+    //   cors({
+    //     origin: "*",
+    //     // credentials: true,
+    //     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    //     allowedHeaders: [
+    //       "Content-Type",
+    //       "Authorization",
+    //       "X-Requested-With",
+    //       "Origin",
+    //       "Accept",
+    //     ],
+    //   })
+    // );
 
     // this.app.use(
     //   cors({

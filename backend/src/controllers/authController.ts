@@ -66,7 +66,6 @@ export class AuthController {
       }
 
       logger.info(`User logged in successfully: ${email}`);
-      res.setHeader("Access-Control-Allow-Origin", "*");
       res.status(200).json(result);
     } catch (error) {
       logger.error("Login error:", error);
