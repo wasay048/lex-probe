@@ -60,24 +60,7 @@ class App {
     console.log("Final origins array:", originsArray);
     this.app.use(
       cors({
-        origin: (origin, callback) => {
-          console.log(`Incoming origin: ${origin}`);
-
-          // Allow requests with no origin (mobile apps, Postman, etc.)
-          if (!origin) {
-            console.log("No origin - allowing request");
-            return callback(null, true);
-          }
-
-          if (originsArray.includes(origin)) {
-            console.log(`Origin allowed: ${origin}`);
-            return callback(null, true);
-          } else {
-            console.log(`Origin blocked: ${origin}`);
-            console.log(`Allowed origins: ${originsArray.join(", ")}`);
-            return callback(new Error("Not allowed by CORS"), false);
-          }
-        },
+        origin: "*",
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: [
