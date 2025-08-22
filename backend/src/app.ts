@@ -15,15 +15,6 @@ class App {
   public app: express.Application;
   private port: number;
 
-  // constructor() {
-  //   this.app = express();
-  //   this.port = config.PORT;
-
-  //   this.initializeMiddleware();
-  //   this.initializeRoutes();
-  //   this.initializeErrorHandling();
-  //   this.connectDatabase();
-  // }
   constructor() {
     this.app = express();
 
@@ -55,47 +46,41 @@ class App {
       })
     );
 
-    // CORS configuration
-    const corsOrigins = isDevelopment
-      ? ["http://localhost:3000", "http://localhost:3001"]
-      : typeof config.CORS_ORIGIN === "string"
-        ? config.CORS_ORIGIN.split(",").map((origin) => origin.trim())
-        : config.CORS_ORIGIN;
+    // CORS configuration (DISABLED)
+    // const corsOrigins = isDevelopment
+    //   ? ["http://localhost:3000", "http://localhost:3001"]
+    //   : typeof config.CORS_ORIGIN === "string"
+    //     ? config.CORS_ORIGIN.split(",").map((origin) => origin.trim())
+    //     : config.CORS_ORIGIN;
 
-    console.log("isDevelopment:", isDevelopment);
-    console.log("config.CORS_ORIGIN raw:", config.CORS_ORIGIN);
-    console.log("Final origins array:", corsOrigins);
+    // console.log("isDevelopment:", isDevelopment);
+    // console.log("config.CORS_ORIGIN raw:", config.CORS_ORIGIN);
+    // console.log("Final origins array:", corsOrigins);
 
-    // Only ONE CORS middleware, properly configured
-    // Only ONE CORS middleware, properly configured
-    this.app.use(
-      cors({
-        origin: (origin, callback) => {
-          // Allow requests with no origin (mobile apps, Postman, etc.)
-          if (!origin) return callback(null, true);
-
-          // Normalize origins: remove trailing slash for comparison
-          const normalize = (url: string) => url.replace(/\/$/, "");
-          const allowed = corsOrigins.map(normalize);
-          const incoming = normalize(origin);
-
-          if (allowed.includes(incoming)) {
-            return callback(null, true);
-          } else {
-            return callback(new Error("Not allowed by CORS"), false);
-          }
-        },
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-        allowedHeaders: [
-          "Content-Type",
-          "Authorization",
-          "X-Requested-With",
-          "Origin",
-          "Accept",
-        ],
-      })
-    );
+    // this.app.use(
+    //   cors({
+    //     origin: (origin, callback) => {
+    //       if (!origin) return callback(null, true);
+    //       const normalize = (url: string) => url.replace(/\/$/, "");
+    //       const allowed = corsOrigins.map(normalize);
+    //       const incoming = normalize(origin);
+    //       if (allowed.includes(incoming)) {
+    //         return callback(null, true);
+    //       } else {
+    //         return callback(new Error("Not allowed by CORS"), false);
+    //       }
+    //     },
+    //     credentials: true,
+    //     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    //     allowedHeaders: [
+    //       "Content-Type",
+    //       "Authorization",
+    //       "X-Requested-With",
+    //       "Origin",
+    //       "Accept",
+    //     ],
+    //   })
+    // );
 
     // Remove all other this.app.use(cors(...)) calls!
 
@@ -297,7 +282,7 @@ class App {
       logger.info(
         `📚 API Documentation: http://localhost:${this.port}/api/${config.API_VERSION}/health`
       );
-      logger.info(`🔗 CORS enabled for: ${config.CORS_ORIGIN}`);
+      logger.info(`🔗 CORS is DISABLED`);
 
       if (isDevelopment) {
         logger.info(`🔧 Development mode: Enhanced logging enabled`);
