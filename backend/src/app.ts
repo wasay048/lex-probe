@@ -67,12 +67,19 @@ class App {
     console.log("Final origins array:", corsOrigins);
 
     // Only ONE CORS middleware, properly configured
+    // Only ONE CORS middleware, properly configured
     this.app.use(
       cors({
         origin: (origin, callback) => {
           // Allow requests with no origin (mobile apps, Postman, etc.)
           if (!origin) return callback(null, true);
-          if (corsOrigins.includes(origin)) {
+
+          // Normalize origins: remove trailing slash for comparison
+          const normalize = (url: string) => url.replace(/\/$/, "");
+          const allowed = corsOrigins.map(normalize);
+          const incoming = normalize(origin);
+
+          if (allowed.includes(incoming)) {
             return callback(null, true);
           } else {
             return callback(new Error("Not allowed by CORS"), false);
