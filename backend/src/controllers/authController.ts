@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import { AuthService } from '@services/authService';
-import { logger } from '@utils/logger';
-import { AuthenticatedRequest } from '@middleware/auth';
+import { Request, Response } from "express";
+import { AuthService } from "@services/authService";
+import { logger } from "@utils/logger";
+import { AuthenticatedRequest } from "@middleware/auth";
 
 export class AuthController {
   private authService: AuthService;
@@ -20,7 +20,7 @@ export class AuthController {
         firstName,
         lastName,
         recaptchaToken,
-        req
+        req,
       });
 
       if (!result.success) {
@@ -31,10 +31,10 @@ export class AuthController {
       logger.info(`User registered successfully: ${email}`);
       res.status(201).json(result);
     } catch (error) {
-      logger.error('Registration error:', error);
+      logger.error("Registration error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error during registration'
+        message: "Internal server error during registration",
       });
     }
   };
@@ -47,7 +47,7 @@ export class AuthController {
         email,
         password,
         recaptchaToken,
-        req
+        req,
       });
 
       if (!result.success) {
@@ -57,21 +57,22 @@ export class AuthController {
 
       // Set refresh token as httpOnly cookie
       if (result.refreshToken) {
-        res.cookie('refreshToken', result.refreshToken, {
+        res.cookie("refreshToken", result.refreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
       }
 
       logger.info(`User logged in successfully: ${email}`);
+      res.setHeader("Access-Control-Allow-Origin", "*");
       res.status(200).json(result);
     } catch (error) {
-      logger.error('Login error:', error);
+      logger.error("Login error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error during login'
+        message: "Internal server error during login",
       });
     }
   };
@@ -79,23 +80,23 @@ export class AuthController {
   logout = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const refreshToken = req.cookies.refreshToken;
-      
+
       if (refreshToken) {
         await this.authService.logout(refreshToken);
       }
 
-      res.clearCookie('refreshToken');
-      
+      res.clearCookie("refreshToken");
+
       logger.info(`User logged out: ${req.user?.email}`);
       res.status(200).json({
         success: true,
-        message: 'Logged out successfully'
+        message: "Logged out successfully",
       });
     } catch (error) {
-      logger.error('Logout error:', error);
+      logger.error("Logout error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error during logout'
+        message: "Internal server error during logout",
       });
     }
   };
@@ -104,10 +105,10 @@ export class AuthController {
     try {
       const { token } = req.query;
 
-      if (!token || typeof token !== 'string') {
+      if (!token || typeof token !== "string") {
         res.status(400).json({
           success: false,
-          message: 'Verification token is required'
+          message: "Verification token is required",
         });
         return;
       }
@@ -122,10 +123,10 @@ export class AuthController {
       logger.info(`Email verified successfully for token: ${token}`);
       res.status(200).json(result);
     } catch (error) {
-      logger.error('Email verification error:', error);
+      logger.error("Email verification error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error during email verification'
+        message: "Internal server error during email verification",
       });
     }
   };
@@ -144,10 +145,10 @@ export class AuthController {
       logger.info(`Verification email resent to: ${email}`);
       res.status(200).json(result);
     } catch (error) {
-      logger.error('Resend verification error:', error);
+      logger.error("Resend verification error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error while resending verification'
+        message: "Internal server error while resending verification",
       });
     }
   };
@@ -161,15 +162,16 @@ export class AuthController {
       // Always return success to prevent email enumeration
       res.status(200).json({
         success: true,
-        message: 'If the email exists in our system, you will receive a password reset link shortly'
+        message:
+          "If the email exists in our system, you will receive a password reset link shortly",
       });
 
       logger.info(`Password reset requested for: ${email}`);
     } catch (error) {
-      logger.error('Forgot password error:', error);
+      logger.error("Forgot password error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error during password reset request'
+        message: "Internal server error during password reset request",
       });
     }
   };
@@ -188,10 +190,10 @@ export class AuthController {
       logger.info(`Password reset successfully for token: ${token}`);
       res.status(200).json(result);
     } catch (error) {
-      logger.error('Reset password error:', error);
+      logger.error("Reset password error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error during password reset'
+        message: "Internal server error during password reset",
       });
     }
   };
@@ -203,7 +205,7 @@ export class AuthController {
       if (!refreshToken) {
         res.status(401).json({
           success: false,
-          message: 'Refresh token is required'
+          message: "Refresh token is required",
         });
         return;
       }
@@ -211,37 +213,40 @@ export class AuthController {
       const result = await this.authService.refreshToken(refreshToken);
 
       if (!result.success) {
-        res.clearCookie('refreshToken');
+        res.clearCookie("refreshToken");
         res.status(401).json(result);
         return;
       }
 
       // Set new refresh token if provided
       if (result.refreshToken) {
-        res.cookie('refreshToken', result.refreshToken, {
+        res.cookie("refreshToken", result.refreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
       }
 
       res.status(200).json(result);
     } catch (error) {
-      logger.error('Refresh token error:', error);
+      logger.error("Refresh token error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error during token refresh'
+        message: "Internal server error during token refresh",
       });
     }
   };
 
-  getProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  getProfile = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
     try {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'User not authenticated'
+          message: "User not authenticated",
         });
         return;
       }
@@ -249,24 +254,27 @@ export class AuthController {
       res.status(200).json({
         success: true,
         data: {
-          user: req.user
-        }
+          user: req.user,
+        },
       });
     } catch (error) {
-      logger.error('Get profile error:', error);
+      logger.error("Get profile error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error while fetching profile'
+        message: "Internal server error while fetching profile",
       });
     }
   };
 
-  updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  updateProfile = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
     try {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'User not authenticated'
+          message: "User not authenticated",
         });
         return;
       }
@@ -275,7 +283,7 @@ export class AuthController {
 
       const result = await this.authService.updateProfile(req.user._id, {
         firstName,
-        lastName
+        lastName,
       });
 
       if (!result.success) {
@@ -286,20 +294,23 @@ export class AuthController {
       logger.info(`Profile updated for user: ${req.user.email}`);
       res.status(200).json(result);
     } catch (error) {
-      logger.error('Update profile error:', error);
+      logger.error("Update profile error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error while updating profile'
+        message: "Internal server error while updating profile",
       });
     }
   };
 
-  changePassword = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  changePassword = async (
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
     try {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'User not authenticated'
+          message: "User not authenticated",
         });
         return;
       }
@@ -320,10 +331,10 @@ export class AuthController {
       logger.info(`Password changed for user: ${req.user.email}`);
       res.status(200).json(result);
     } catch (error) {
-      logger.error('Change password error:', error);
+      logger.error("Change password error:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error while changing password'
+        message: "Internal server error while changing password",
       });
     }
   };
