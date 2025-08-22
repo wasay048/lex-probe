@@ -108,14 +108,14 @@ class App {
 
     // General middleware
 
-    this.app.use(
-      cors({
-        origin: true, // Allow all origins temporarily
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-        // allowedHeaders: ["*"],
-      })
-    );
+    // this.app.use(
+    //   cors({
+    //     origin: true, // Allow all origins temporarily
+    //     credentials: true,
+    //     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    //     allowedHeaders: ["*"],
+    //   })
+    // );
 
     this.app.use(compression() as any);
     this.app.use(cookieParser());
