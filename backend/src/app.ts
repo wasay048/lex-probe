@@ -113,7 +113,7 @@ class App {
         origin: true, // Allow all origins temporarily
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-        allowedHeaders: ["*"],
+        // allowedHeaders: ["*"],
       })
     );
 
