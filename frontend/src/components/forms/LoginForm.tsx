@@ -36,7 +36,7 @@ const LoginForm: React.FC = () => {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
-      <Button type="submit">Login</Button>
+      <Button type="submit">Login </Button>
     </form>
   );
 };
