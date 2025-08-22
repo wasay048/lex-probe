@@ -9,6 +9,7 @@ import database from "@config/database";
 import { logger } from "@utils/logger";
 import { generalLimiter } from "@middleware/rateLimiter";
 import apiRoutes from "@routes/index";
+require('dotenv').config();
 
 class App {
   public app: express.Application;
@@ -42,80 +43,80 @@ class App {
     );
 
     // CORS configuration
-    // const corsOrigins = isDevelopment
-    //   ? ["http://localhost:3000", "http://localhost:3001"]
-    //   : config.CORS_ORIGIN;
+    const corsOrigins = isDevelopment
+      ? ["http://localhost:3000", "http://localhost:3001"]
+      : config.CORS_ORIGIN;
 
-    // console.log("isDevelopment:", isDevelopment);
-    // console.log("config.CORS_ORIGIN raw:", config.CORS_ORIGIN);
-    // console.log("corsOrigins type:", typeof corsOrigins);
-    // console.log("corsOrigins value:", corsOrigins);
+    console.log("isDevelopment:", isDevelopment);
+    console.log("config.CORS_ORIGIN raw:", config.CORS_ORIGIN);
+    console.log("corsOrigins type:", typeof corsOrigins);
+    console.log("corsOrigins value:", corsOrigins);
 
-    // // Convert to array if it's a string
-    // const originsArray =
-    //   typeof corsOrigins === "string"
-    //     ? corsOrigins.split(",").map((origin) => origin.trim())
-    //     : corsOrigins;
+    // Convert to array if it's a string
+    const originsArray =
+      typeof corsOrigins === "string"
+        ? corsOrigins.split(",").map((origin) => origin.trim())
+        : corsOrigins;
 
-    // console.log("Final origins array:", originsArray);
+    console.log("Final origins array:", originsArray);
 
-    // this.app.use(
-    //   cors({
-    //     origin: "*",
-    //     // credentials: true,
-    //     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    //     allowedHeaders: [
-    //       "Content-Type",
-    //       "Authorization",
-    //       "X-Requested-With",
-    //       "Origin",
-    //       "Accept",
-    //     ],
-    //   })
-    // );
+    this.app.use(
+      cors({
+        origin: "*",
+        // credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: [
+          "Content-Type",
+          "Authorization",
+          "X-Requested-With",
+          "Origin",
+          "Accept",
+        ],
+      })
+    );
 
-    // this.app.use(
-    //   cors({
-    //     origin: (origin, callback) => {
-    //       console.log(`Incoming origin: ${origin}`);
+    this.app.use(
+      cors({
+        origin: (origin, callback) => {
+          console.log(`Incoming origin: ${origin}`);
 
-    //       // Allow requests with no origin (mobile apps, Postman, etc.)
-    //       if (!origin) {
-    //         console.log("No origin - allowing request");
-    //         return callback(null, true);
-    //       }
+          // Allow requests with no origin (mobile apps, Postman, etc.)
+          if (!origin) {
+            console.log("No origin - allowing request");
+            return callback(null, true);
+          }
 
-    //       if (originsArray.includes(origin)) {
-    //         console.log(`Origin allowed: ${origin}`);
-    //         return callback(null, true);
-    //       } else {
-    //         console.log(`Origin blocked: ${origin}`);
-    //         console.log(`Allowed origins: ${originsArray.join(", ")}`);
-    //         return callback(new Error("Not allowed by CORS"), false);
-    //       }
-    //     },
-    //     credentials: true,
-    //     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    //     allowedHeaders: [
-    //       "Content-Type",
-    //       "Authorization",
-    //       "X-Requested-With",
-    //       "Origin",
-    //       "Accept",
-    //     ],
-    //   })
-    // );
+          if (originsArray.includes(origin)) {
+            console.log(`Origin allowed: ${origin}`);
+            return callback(null, true);
+          } else {
+            console.log(`Origin blocked: ${origin}`);
+            console.log(`Allowed origins: ${originsArray.join(", ")}`);
+            return callback(new Error("Not allowed by CORS"), false);
+          }
+        },
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: [
+          "Content-Type",
+          "Authorization",
+          "X-Requested-With",
+          "Origin",
+          "Accept",
+        ],
+      })
+    );
 
-    // General middleware
+    //General middleware
 
-    // this.app.use(
-    //   cors({
-    //     origin: true, // Allow all origins temporarily
-    //     credentials: true,
-    //     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    //     allowedHeaders: ["*"],
-    //   })
-    // );
+    this.app.use(
+      cors({
+        origin: true, // Allow all origins temporarily
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        allowedHeaders: ["*"],
+      })
+    );
 
     this.app.use(compression() as any);
     this.app.use(cookieParser());
