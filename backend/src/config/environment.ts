@@ -25,9 +25,11 @@ interface EnvironmentConfig {
   CORS_ORIGIN: string | string[];
   OPENAI_API_KEY: string;
   SERP_API_KEY?: string;
+  OTP_EXPIRES_MINUTES: number;
 }
 
 const envSchema = Joi.object({
+  OTP_EXPIRES_MINUTES: Joi.number().default(5),
   NODE_ENV: Joi.string()
     .valid("development", "production", "test")
     .default("development"),

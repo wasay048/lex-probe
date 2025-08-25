@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AuthService } from "@services/authService";
 import { logger } from "@utils/logger";
 import { AuthenticatedRequest } from "@middleware/auth";
+import userRepository from "@repositories/userRepository";
 
 export class AuthController {
   private authService: AuthService;
@@ -336,5 +337,18 @@ export class AuthController {
         message: "Internal server error while changing password",
       });
     }
+  };
+
+  verifyOtp = async (req: Request, res: Response) => {
+    const { email, otp } = req.body;
+    const user = await userRepository.verifyOtp(email, otp);
+    if (!user)
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired OTP" });
+    user.isEmailVerified = true;
+    await user.save();
+    await userRepository.clearOtp(user._id);
+    res.json({ success: true });
   };
 }

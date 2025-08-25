@@ -15,6 +15,8 @@ export interface IUser extends Document {
   organization?: string;
   lastLogin?: Date;
   isActive: boolean;
+  otpCode?: string;
+  otpExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -80,6 +82,8 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: true,
     },
+    otpCode: { type: String, select: false },
+    otpExpires: { type: Date, select: false },
   },
   {
     timestamps: true,

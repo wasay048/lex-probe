@@ -21,6 +21,22 @@ class App {
     // Trust proxy for correct client IP (important for rate limiting and CORS behind Nginx/ELB)
     this.app.set("trust proxy", 1);
 
+    // CORS middleware should be first
+    this.app.use(
+      cors({
+        origin: ["http://localhost:3000", "http://localhost:3001"], // Add your frontend URLs here
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        allowedHeaders: [
+          "Content-Type",
+          "Authorization",
+          "X-Requested-With",
+          "Origin",
+          "Accept",
+        ],
+        credentials: true,
+      })
+    );
+
     this.port = config.PORT;
 
     this.initializeMiddleware();
@@ -45,44 +61,6 @@ class App {
         crossOriginEmbedderPolicy: false,
       })
     );
-
-    // CORS configuration (DISABLED)
-    // const corsOrigins = isDevelopment
-    //   ? ["http://localhost:3000", "http://localhost:3001"]
-    //   : typeof config.CORS_ORIGIN === "string"
-    //     ? config.CORS_ORIGIN.split(",").map((origin) => origin.trim())
-    //     : config.CORS_ORIGIN;
-
-    // console.log("isDevelopment:", isDevelopment);
-    // console.log("config.CORS_ORIGIN raw:", config.CORS_ORIGIN);
-    // console.log("Final origins array:", corsOrigins);
-
-    // this.app.use(
-    //   cors({
-    //     origin: (origin, callback) => {
-    //       if (!origin) return callback(null, true);
-    //       const normalize = (url: string) => url.replace(/\/$/, "");
-    //       const allowed = corsOrigins.map(normalize);
-    //       const incoming = normalize(origin);
-    //       if (allowed.includes(incoming)) {
-    //         return callback(null, true);
-    //       } else {
-    //         return callback(new Error("Not allowed by CORS"), false);
-    //       }
-    //     },
-    //     credentials: true,
-    //     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    //     allowedHeaders: [
-    //       "Content-Type",
-    //       "Authorization",
-    //       "X-Requested-With",
-    //       "Origin",
-    //       "Accept",
-    //     ],
-    //   })
-    // );
-
-    // Remove all other this.app.use(cors(...)) calls!
 
     this.app.use(compression() as any);
     this.app.use(cookieParser());

@@ -1,9 +1,9 @@
 import { Request } from "express";
 import jwt, { Secret, SignOptions } from "jsonwebtoken";
-import crypto from "crypto";
 import { User, IUser } from "@models/User";
 import { config } from "@config/environment";
-import { emailService } from "@utils/email";
+import { sendOtpEmail } from "@utils/email";
+import crypto from "crypto";
 import {
   validateRecaptcha,
   validatePassword,
@@ -101,8 +101,9 @@ export class AuthService {
         };
       }
 
-      // Generate email verification token
-      const emailVerificationToken = crypto.randomBytes(32).toString("hex");
+      // Generate a 6-digit OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const otpExpires = new Date(Date.now() + config.OTP_EXPIRES_MINUTES * 60 * 1000); // configurable
 
       // Create user
       const user = new User({
@@ -111,57 +112,24 @@ export class AuthService {
         firstName,
         lastName,
         organization,
-        emailVerificationToken,
-        isEmailVerified: process.env.NODE_ENV === "development", // Auto-verify in development
+        otpCode: otp,
+        otpExpires,
+        isEmailVerified: false,
         isActive: true,
       });
 
       await user.save();
 
-      // Generate tokens
-      const accessToken = this.generateAccessToken(user);
-      const refreshToken = this.generateRefreshToken(user);
-
-      // Send verification email in production
-      if (process.env.NODE_ENV === "production" && !user.isEmailVerified) {
-        try {
-          await emailService.sendVerificationEmail(
-            user.email,
-            emailVerificationToken,
-            user.firstName
-          );
-        } catch (emailError) {
-          logger.error("Failed to send verification email:", emailError);
-        }
-
-        return {
-          success: true,
-          message:
-            "Registration successful. Please check your email to verify your account.",
-        };
+      // Send OTP email (always, even in development)
+      try {
+        await sendOtpEmail(user.email, otp);
+      } catch (emailError) {
+        logger.error("Failed to send OTP email:", emailError);
       }
 
-      // Return user data for development or if email is verified
       return {
         success: true,
-        message: "Registration successful",
-        data: {
-          user: {
-            _id: user._id.toString(),
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            role: user.role,
-            isEmailVerified: user.isEmailVerified,
-            isActive: user.isActive,
-            lastLogin: user.lastLogin,
-            organization: user.organization,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-          },
-          accessToken,
-        },
-        refreshToken,
+        message: "Registration successful. Please check your email for the verification code.",
       };
     } catch (error) {
       logger.error("Registration service error:", error);
@@ -325,28 +293,26 @@ export class AuthService {
         };
       }
 
-      // Generate new verification token
-      const emailVerificationToken = crypto.randomBytes(32).toString("hex");
-      user.emailVerificationToken = emailVerificationToken;
+      // Generate new OTP and expiration
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const otpExpires = new Date(Date.now() + config.OTP_EXPIRES_MINUTES * 60 * 1000);
+      user.otpCode = otp;
+      user.otpExpires = otpExpires;
       await user.save();
 
-      // Send verification email
-      const emailSent = await emailService.sendVerificationEmail(
-        email,
-        emailVerificationToken,
-        user.firstName
-      );
-
-      if (!emailSent) {
+      // Send OTP email
+      try {
+        await sendOtpEmail(email, otp);
+      } catch (emailError) {
+        logger.error("Failed to send OTP email:", emailError);
         return {
           success: false,
-          message: "Failed to send verification email",
+          message: "Failed to send OTP email",
         };
       }
-
       return {
         success: true,
-        message: "Verification email sent successfully",
+        message: "OTP sent successfully",
       };
     } catch (error) {
       logger.error("Resend verification email service error:", error);
@@ -375,13 +341,9 @@ export class AuthService {
       await user.save();
 
       // Send password reset email
-      const emailSent = await emailService.sendPasswordResetEmail(
-        email,
-        resetToken,
-        user.firstName
-      );
-
-      if (!emailSent) {
+      try {
+        await sendOtpEmail(email, resetToken);
+      } catch (emailError) {
         logger.warn(`Failed to send password reset email to: ${email}`);
       }
 

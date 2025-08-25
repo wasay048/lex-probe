@@ -339,12 +339,10 @@ class EmailService {
             <p>If you have any questions about your report or need assistance interpreting the results, 
             please don't hesitate to contact our support team.</p>
             
-            <p>Need help? Check out our <a href="${
-              config.CORS_ORIGIN
-            }/help" style="color: #059669;">Help Center</a> 
-            or <a href="${
-              config.CORS_ORIGIN
-            }/contact" style="color: #059669;">contact support</a>.</p>
+            <p>Need help? Check out our <a href="${config.CORS_ORIGIN
+      }/help" style="color: #059669;">Help Center</a> 
+            or <a href="${config.CORS_ORIGIN
+      }/contact" style="color: #059669;">contact support</a>.</p>
             
             <div class="footer">
               <p>
@@ -353,9 +351,8 @@ class EmailService {
               </p>
               <p>
                 This email was sent because you requested a cartel detection report. 
-                If you didn't request this report, please <a href="${
-                  config.CORS_ORIGIN
-                }/contact" style="color: #059669;">contact us</a>.
+                If you didn't request this report, please <a href="${config.CORS_ORIGIN
+      }/contact" style="color: #059669;">contact us</a>.
               </p>
             </div>
           </div>
@@ -498,8 +495,8 @@ class EmailService {
             <div class="warning-box">
               <strong>⚠️ Important:</strong> This shared access will expire on 
               <strong>${new Date(
-                Date.now() + 7 * 24 * 60 * 60 * 1000
-              ).toLocaleDateString()}</strong>. 
+      Date.now() + 7 * 24 * 60 * 60 * 1000
+    ).toLocaleDateString()}</strong>. 
               Make sure to review the report before the expiration date.
             </div>
             
@@ -521,12 +518,10 @@ class EmailService {
             
             <p>Questions about the report content? Contact <strong>${sharedByName}</strong> who shared this with you.</p>
             
-            <p>Need technical support? Visit our <a href="${
-              config.CORS_ORIGIN
-            }/help" style="color: #2563eb;">Help Center</a> 
-            or <a href="${
-              config.CORS_ORIGIN
-            }/contact" style="color: #2563eb;">contact our support team</a>.</p>
+            <p>Need technical support? Visit our <a href="${config.CORS_ORIGIN
+      }/help" style="color: #2563eb;">Help Center</a> 
+            or <a href="${config.CORS_ORIGIN
+      }/contact" style="color: #2563eb;">contact our support team</a>.</p>
             
             <div class="footer">
               <p>
@@ -535,17 +530,14 @@ class EmailService {
               </p>
               <p>
                 This email was sent because someone shared a report with your email address. 
-                If you believe this was sent in error, please <a href="${
-                  config.CORS_ORIGIN
-                }/contact" style="color: #2563eb;">contact us</a>.
+                If you believe this was sent in error, please <a href="${config.CORS_ORIGIN
+      }/contact" style="color: #2563eb;">contact us</a>.
               </p>
               <p>
-                <a href="${
-                  config.CORS_ORIGIN
-                }/privacy" style="color: #2563eb;">Privacy Policy</a> | 
-                <a href="${
-                  config.CORS_ORIGIN
-                }/terms" style="color: #2563eb;">Terms of Service</a>
+                <a href="${config.CORS_ORIGIN
+      }/privacy" style="color: #2563eb;">Privacy Policy</a> | 
+                <a href="${config.CORS_ORIGIN
+      }/terms" style="color: #2563eb;">Terms of Service</a>
               </p>
             </div>
           </div>
@@ -569,3 +561,42 @@ class EmailService {
 }
 
 export const emailService = new EmailService();
+
+export const sendOtpEmail = async (to: string, otp: string) => {
+  const transporter = nodemailer.createTransport({
+    host: config.SMTP_HOST,
+    port: config.SMTP_PORT,
+    auth: { user: config.SMTP_USER, pass: config.SMTP_PASS },
+  });
+  await transporter.sendMail({
+    from: 'Lexprobe <noreply@lexprobe.com>',
+    to,
+    subject: "Your OTP Code - Lexprobe Account Verification",
+    text: `Your OTP code is: ${otp}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Your OTP Code - Lexprobe</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; background: #f9fafb; color: #222; margin: 0; padding: 0;">
+          <div style="max-width: 480px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(99,102,241,0.08); padding: 32px 24px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <span style="font-size: 2rem; font-weight: bold; color: #6366f1; letter-spacing: 1px;">Lexprobe</span>
+            </div>
+            <h2 style="color: #6366f1; text-align: center; margin-bottom: 16px;">Verify Your Email</h2>
+            <p style="font-size: 1.1rem; text-align: center; margin-bottom: 24px;">Thank you for registering with Lexprobe!<br>Your One-Time Password (OTP) is:</p>
+            <div style="text-align: center; margin-bottom: 24px;">
+              <span style="display: inline-block; font-size: 2.2rem; font-weight: bold; letter-spacing: 0.4em; color: #2563eb; background: #f1f5ff; padding: 12px 32px; border-radius: 8px; border: 1px solid #e0e7ff;">${otp}</span>
+            </div>
+            <p style="text-align: center; color: #666; margin-bottom: 16px;">This code will expire in a few minutes for your security.<br>If you did not request this, please ignore this email.</p>
+            <div style="text-align: center; margin-top: 32px;">
+              <span style="font-size: 0.95rem; color: #888;">&copy; ${new Date().getFullYear()} Lexprobe. All rights reserved.</span>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  });
+};

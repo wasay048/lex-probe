@@ -58,6 +58,8 @@ router.post(
 
 router.post("/refresh-token", authController.refreshToken);
 
+router.post("/verify", authController.verifyOtp);
+
 // Protected routes
 router.post("/logout", authenticate, authController.logout);
 

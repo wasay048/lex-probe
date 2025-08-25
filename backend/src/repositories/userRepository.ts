@@ -338,6 +338,17 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  async setOtp(userId: string, otpCode: string, otpExpires: Date) {
+    return User.findByIdAndUpdate(userId, { otpCode, otpExpires }, { new: true });
+  }
+  async verifyOtp(email: string, otpCode: string) {
+    const user = await User.findOne({ email, otpCode, otpExpires: { $gt: new Date() } });
+    return user;
+  }
+  async clearOtp(userId: string) {
+    return User.findByIdAndUpdate(userId, { otpCode: undefined, otpExpires: undefined }, { new: true });
+  }
+
   //   async setUserInactive(userId: string): Promise<IUser | null> {
   //     try {
   //       return await User.findByIdAndUpdate(
