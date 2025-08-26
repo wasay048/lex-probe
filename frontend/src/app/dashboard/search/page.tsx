@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { projectAPI, searchAPI } from "@/lib/api";
@@ -144,16 +143,15 @@ const NewProjectPage: React.FC = () => {
   };
 
   return (
-    <DashboardLayout>
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Create New Project
-          </h1>
-          <p className="text-gray-600">
-            Organize your cartel detection searches and analyses into a
-            structured project.
-          </p>
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Create New Project
+        </h1>
+        <p className="text-gray-600">
+          Organize your cartel detection searches and analyses into a
+          structured project.
+        </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -368,7 +366,7 @@ const NewProjectPage: React.FC = () => {
           </div>
         </form>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 

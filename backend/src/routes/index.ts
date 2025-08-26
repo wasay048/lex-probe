@@ -6,6 +6,7 @@ import projectRoutes from "./projects";
 import alertRoutes from "./alerts";
 import reportRoutes from "./reports";
 import dashboardRoutes from "./dashboard";
+import demoRequestRoutes from "./demoRequestRoutes";
 
 const router = Router();
 
@@ -27,6 +28,7 @@ router.use("/projects", projectRoutes);
 router.use("/alerts", alertRoutes);
 router.use("/reports", reportRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/demo-requests", demoRequestRoutes);
 
 // 404 handler for API routes
 router.use("*", (req, res) => {
@@ -44,6 +46,8 @@ router.use("*", (req, res) => {
       "GET /api/alerts",
       "GET /api/reports",
       "GET /api/dashboard/stats",
+      "POST /api/demo-requests",
+      "GET /api/demo-requests/check-eligibility",
     ],
   });
 });

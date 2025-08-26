@@ -1,0 +1,10 @@
+<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background rectangles with rounded corners -->
+  <rect x="0" y="0" width="120" height="40" rx="8" ry="8" fill="#2C5F5F" stroke="#FFD700" stroke-width="2"/>
+  <rect x="5" y="5" width="110" height="30" rx="6" ry="6" fill="none" stroke="#FFD700" stroke-width="1.5"/>
+  
+  <!-- Text -->
+  <text x="60" y="26" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#FFD700">
+    Lex Probe
+  </text>
+</svg>

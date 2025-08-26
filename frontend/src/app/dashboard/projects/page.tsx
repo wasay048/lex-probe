@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { projectAPI } from "@/lib/api";
@@ -141,24 +140,21 @@ const DashboardProjectsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <DashboardLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      </DashboardLayout>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-            <p className="text-gray-600">
-              Organize your cartel detection searches into structured projects
-            </p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
+          <p className="text-gray-600">
+            Organize your cartel detection searches into structured projects
+          </p>
           </div>
           <Link href="/dashboard/projects/new">
             <Button>
@@ -331,7 +327,7 @@ const DashboardProjectsPage: React.FC = () => {
           </div>
         )}
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 

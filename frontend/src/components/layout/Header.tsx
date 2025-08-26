@@ -227,16 +227,13 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle, showMobileMenu }) => {
                 </div>
               </>
             ) : (
-              /* Auth buttons for non-authenticated users */
+              /* Demo request button for non-authenticated users */
               !isAuthPage && (
                 <div className="flex items-center space-x-3">
-                  <Link href="/login">
-                    <Button variant="outline" size="sm">
-                      Sign in
+                  <Link href="/demo">
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                      Get Demo
                     </Button>
-                  </Link>
-                  <Link href="/register">
-                    <Button size="sm">Get started</Button>
                   </Link>
                 </div>
               )

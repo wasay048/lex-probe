@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import { searchAPI, reportAPI, projectAPI } from "@/lib/api";
 import toast from "react-hot-toast";
@@ -353,57 +352,52 @@ const AnalyticsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center min-h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      </DashboardLayout>
+      <div className="flex items-center justify-center min-h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
     );
   }
 
   if (!analytics) {
     return (
-      <DashboardLayout>
-        <div className="text-center py-12">
-          <ChartBarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Unable to load analytics
-          </h3>
-          <p className="text-gray-600 mb-6">
-            There was an error loading your analytics data.
-          </p>
-          <Button onClick={loadAnalytics}>Try Again</Button>
-        </div>
-      </DashboardLayout>
+      <div className="text-center py-12">
+        <ChartBarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          Unable to load analytics
+        </h3>
+        <p className="text-gray-600 mb-6">
+          There was an error loading your analytics data.
+        </p>
+        <Button onClick={loadAnalytics}>Try Again</Button>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Analytics Dashboard
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Comprehensive insights into your cartel detection analyses and
-              risk assessments.
-            </p>
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Analytics Dashboard
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Comprehensive insights into your cartel detection analyses and
+            risk assessments.
+          </p>
+        </div>
 
-          <div className="flex items-center space-x-3">
-            <select
-              aria-label="Select time range"
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value as any)}
-              className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="7d">Last 7 days</option>
-              <option value="30d">Last 30 days</option>
-              <option value="90d">Last 90 days</option>
-              <option value="1y">Last year</option>
+        <div className="flex items-center space-x-3">
+          <select
+            aria-label="Select time range"
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value as any)}
+            className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+            <option value="1y">Last year</option>
             </select>
 
             <Button
@@ -726,7 +720,7 @@ const AnalyticsPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 

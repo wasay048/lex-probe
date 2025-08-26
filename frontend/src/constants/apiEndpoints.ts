@@ -1,22 +1,33 @@
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN: '/api/auth/login',
-    REGISTER: '/api/auth/register',
+    LOGIN: `${API_BASE_URL}/api/v1/auth/login`,
+    REGISTER: `${API_BASE_URL}/api/v1/auth/register`,
+  },
+  DEMO_REQUESTS: {
+    SUBMIT: `${API_BASE_URL}/api/v1/demo-requests`,
+    GET_ALL: `${API_BASE_URL}/api/v1/demo-requests`,
+    GET_BY_ID: (id: string) => `${API_BASE_URL}/api/v1/demo-requests/${id}`,
+    UPDATE: (id: string) => `${API_BASE_URL}/api/v1/demo-requests/${id}`,
+    CHECK_ELIGIBILITY: `${API_BASE_URL}/api/v1/demo-requests/check-eligibility`,
+    STATS: `${API_BASE_URL}/api/v1/demo-requests/stats`,
   },
   SEARCH: {
-    EXECUTE: '/api/search/execute',
-    GET_RESULTS: '/api/search/results',
+    EXECUTE: `${API_BASE_URL}/api/search/execute`,
+    GET_RESULTS: `${API_BASE_URL}/api/search/results`,
   },
   PROJECT: {
-    CREATE: '/api/projects/create',
-    GET_ALL: '/api/projects',
+    CREATE: `${API_BASE_URL}/api/projects/create`,
+    GET_ALL: `${API_BASE_URL}/api/projects`,
   },
   ALERT: {
-    CREATE: '/api/alerts/create',
-    GET_ALL: '/api/alerts',
+    CREATE: `${API_BASE_URL}/api/alerts/create`,
+    GET_ALL: `${API_BASE_URL}/api/alerts`,
   },
   REPORT: {
-    GENERATE: '/api/reports/generate',
-    GET_ALL: '/api/reports',
+    GENERATE: `${API_BASE_URL}/api/reports/generate`,
+    GET_ALL: `${API_BASE_URL}/api/reports`,
   },
 };

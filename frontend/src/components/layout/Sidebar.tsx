@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import Logo from "@/components/ui/Logo";
+import { useAuth } from "@/context/AuthContext";
 import {
   HomeIcon,
   MagnifyingGlassIcon,
@@ -14,6 +15,8 @@ import {
   Cog6ToothIcon,
   QuestionMarkCircleIcon,
   SparklesIcon,
+  UserGroupIcon,
+  ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeIconSolid,
@@ -22,6 +25,8 @@ import {
   DocumentTextIcon as DocumentTextIconSolid,
   ChartBarIcon as ChartBarIconSolid,
   Cog6ToothIcon as Cog6ToothIconSolid,
+  UserGroupIcon as UserGroupIconSolid,
+  ClipboardDocumentListIcon as ClipboardDocumentListIconSolid,
 } from "@heroicons/react/24/solid";
 
 interface SidebarProps {
@@ -31,6 +36,8 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
 
   const navigation = [
     {
@@ -67,6 +74,23 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: ChartBarIcon,
       iconSolid: ChartBarIconSolid,
       current: pathname.startsWith("/dashboard/analytics"),
+    },
+  ];
+
+  const adminNavigation = [
+    {
+      name: "Demo Requests",
+      href: "/dashboard/admin/demo-requests",
+      icon: ClipboardDocumentListIcon,
+      iconSolid: ClipboardDocumentListIconSolid,
+      current: pathname.startsWith("/dashboard/admin/demo-requests"),
+    },
+    {
+      name: "User Management",
+      href: "/dashboard/admin/users",
+      icon: UserGroupIcon,
+      iconSolid: UserGroupIconSolid,
+      current: pathname.startsWith("/dashboard/admin/users"),
     },
   ];
 
@@ -149,6 +173,44 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 })}
               </ul>
             </div>
+
+            {/* Admin navigation - only show for admin users */}
+            {isAdmin && (
+              <div>
+                <h3 className="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Administration
+                </h3>
+                <ul className="mt-3 space-y-1">
+                  {adminNavigation.map((item) => {
+                    const Icon = item.current ? item.iconSolid : item.icon;
+                    return (
+                      <li key={item.name}>
+                        <Link
+                          href={item.href}
+                          onClick={onClose}
+                          className={clsx(
+                            "group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                            item.current
+                              ? "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
+                              : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                          )}
+                        >
+                          <Icon
+                            className={clsx(
+                              "mr-3 h-5 w-5 flex-shrink-0",
+                              item.current
+                                ? "text-blue-600"
+                                : "text-gray-400 group-hover:text-gray-500"
+                            )}
+                          />
+                          {item.name}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
 
             {/* Secondary navigation */}
             <div>

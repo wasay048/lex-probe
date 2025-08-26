@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { projectAPI } from "@/lib/api";
@@ -85,20 +84,19 @@ const NewProjectPage: React.FC = () => {
   };
 
   return (
-    <DashboardLayout>
-      <div className="max-w-2xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => router.back()}
-            className="inline-flex items-center text-gray-600 hover:text-gray-800"
-          >
-            <ArrowLeftIcon className="h-5 w-5 mr-2" />
-            Back
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Create New Project
-          </h1>
+    <div className="max-w-2xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-center space-x-4">
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center text-gray-600 hover:text-gray-800"
+        >
+          <ArrowLeftIcon className="h-5 w-5 mr-2" />
+          Back
+        </button>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Create New Project
+        </h1>
         </div>
 
         {/* Form */}
@@ -240,7 +238,7 @@ const NewProjectPage: React.FC = () => {
           </ul>
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 
