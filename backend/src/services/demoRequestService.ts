@@ -181,6 +181,7 @@ export class DemoRequestService {
       if (data.status === "approved") {
         updateData.approvedBy = adminId;
         updateData.approvedAt = new Date();
+        // Always force signupAllowed to true when approved
         updateData.signupAllowed = true;
         updateData.rejectedAt = undefined;
         updateData.rejectionReason = undefined;
@@ -326,32 +327,27 @@ export class DemoRequestService {
               
               <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0;">Request Details:</h3>
-                <p><strong>Name:</strong> ${request.firstName} ${
-            request.lastName
-          }</p>
+                <p><strong>Name:</strong> ${request.firstName} ${request.lastName
+            }</p>
                 <p><strong>Email:</strong> ${request.email}</p>
                 <p><strong>Company:</strong> ${request.company}</p>
                 <p><strong>Job Title:</strong> ${request.jobTitle}</p>
-                ${
-                  request.phoneNumber
-                    ? `<p><strong>Phone:</strong> ${request.phoneNumber}</p>`
-                    : ""
-                }
-                ${
-                  request.companySize
-                    ? `<p><strong>Company Size:</strong> ${request.companySize}</p>`
-                    : ""
-                }
-                ${
-                  request.industry
-                    ? `<p><strong>Industry:</strong> ${request.industry}</p>`
-                    : ""
-                }
-                ${
-                  request.message
-                    ? `<p><strong>Message:</strong><br>${request.message}</p>`
-                    : ""
-                }
+                ${request.phoneNumber
+              ? `<p><strong>Phone:</strong> ${request.phoneNumber}</p>`
+              : ""
+            }
+                ${request.companySize
+              ? `<p><strong>Company Size:</strong> ${request.companySize}</p>`
+              : ""
+            }
+                ${request.industry
+              ? `<p><strong>Industry:</strong> ${request.industry}</p>`
+              : ""
+            }
+                ${request.message
+              ? `<p><strong>Message:</strong><br>${request.message}</p>`
+              : ""
+            }
               </div>
 
               <div style="margin: 30px 0; text-align: center;">
@@ -392,10 +388,12 @@ export class DemoRequestService {
               <h3 style="margin-top: 0; color: #2563eb;">What's Next?</h3>
               <ul style="margin: 0; padding-left: 20px;">
                 <li>Our team will review your demo request</li>
-                <li>You'll receive an approval email with access instructions</li>
-                <li>You'll be able to sign up and explore our platform</li>
-                <li>We'll schedule a personalized demo session</li>
+                <li>Once you are allowed to take the demo, you will be notified by email that you have access to sign up for our application.</li>
+                <li>After approval, you can sign up and explore our platform using the link below:</li>
               </ul>
+              <div style="margin-top: 18px;">
+                <a href="https://lexprobe.com/signup" style="background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Sign Up to LexProbe</a>
+              </div>
             </div>
 
             <p>If you have any questions in the meantime, please don't hesitate to contact us.</p>
@@ -434,8 +432,8 @@ export class DemoRequestService {
               
               <div style="text-align: center; margin: 20px 0;">
                 <a href="http://localhost:3000/auth/signup?email=${encodeURIComponent(
-                  request.email
-                )}" 
+          request.email
+        )}" 
                    style="background-color: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 0 10px;">
                   Create Account
                 </a>
@@ -448,9 +446,8 @@ export class DemoRequestService {
 
             <div style="background-color: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
               <p style="margin: 0; color: #92400e;">
-                <strong>Important:</strong> This approval is specifically for the email address ${
-                  request.email
-                }. 
+                <strong>Important:</strong> This approval is specifically for the email address ${request.email
+          }. 
                 Please use this email when creating your account.
               </p>
             </div>
@@ -493,16 +490,15 @@ export class DemoRequestService {
             
             <p>Thank you for your interest in LexProbe. After reviewing your demo request, we're unable to approve access at this time.</p>
             
-            ${
-              request.rejectionReason
-                ? `
+            ${request.rejectionReason
+            ? `
             <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
               <h3 style="margin-top: 0; color: #dc2626;">Reason:</h3>
               <p style="margin: 0;">${request.rejectionReason}</p>
             </div>
             `
-                : ""
-            }
+            : ""
+          }
 
             <p>If you believe this decision was made in error or if your circumstances have changed, please feel free to submit a new demo request or contact our team directly.</p>
             
