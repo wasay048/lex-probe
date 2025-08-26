@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import { authAPI } from "@/lib/api";
 import toast from "react-hot-toast";
@@ -337,16 +336,15 @@ const SettingsPage: React.FC = () => {
   ];
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-          <p className="mt-2 text-gray-600">
-            Manage your account settings, security preferences, and notification
-            options.
-          </p>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+        <p className="mt-2 text-gray-600">
+          Manage your account settings, security preferences, and notification
+          options.
+        </p>
+      </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
@@ -1198,7 +1196,7 @@ const SettingsPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 

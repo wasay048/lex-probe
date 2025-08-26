@@ -41,16 +41,10 @@ export default function HomePage() {
             </div>
             <div className="flex items-center space-x-4">
               <Link
-                href="/login"
-                className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                href="/demo"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
               >
-                Sign In
-              </Link>
-              <Link
-                href="/register"
-                className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
-              >
-                Get Started
+                Get Demo
               </Link>
             </div>
           </div>
@@ -76,18 +70,11 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
               <Link
-                href="/register"
-                className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-lg text-lg font-medium inline-flex items-center justify-center transition-all shadow-lg hover:shadow-xl"
+                href="/demo"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-medium inline-flex items-center justify-center transition-all shadow-lg hover:shadow-xl"
               >
-                Start Free Trial
+                Request Demo
                 <ArrowRightIcon className="ml-2 h-5 w-5" />
-              </Link>
-              <Link
-                href="/login"
-                className="border border-gray-300 hover:border-gray-400 bg-white text-gray-700 px-8 py-3 rounded-lg text-lg font-medium inline-flex items-center justify-center transition-all hover:shadow-md"
-              >
-                <EyeIcon className="mr-2 h-5 w-5" />
-                View Demo
               </Link>
             </div>
 
@@ -211,16 +198,10 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
-              href="/register"
+              href="/demo"
               className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-lg text-lg font-medium transition-colors shadow-lg"
             >
-              Start Your Free Trial
-            </Link>
-            <Link
-              href="/login"
-              className="border border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-lg text-lg font-medium transition-colors"
-            >
-              Sign In to Continue
+              Request Demo
             </Link>
           </div>
         </div>

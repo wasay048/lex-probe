@@ -68,11 +68,9 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-.env
 .env.development.local
 .env.test.local
 .env.production.local
-.env.local
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -116,7 +114,6 @@ dist
 .pnp.*
 
 # IDEs and editors
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -167,9 +164,6 @@ docker-compose.yml
 # pnpm-lock.yaml
 
 # IDE specific files
-.vscode/settings.json
-.vscode/launch.json
-.vscode/extensions.json
 
 # TypeScript
 *.d.ts.map
@@ -215,3 +209,5 @@ local/
 *.zip
 backend.zip
 frontend.zip
+config.bat
+node_modules

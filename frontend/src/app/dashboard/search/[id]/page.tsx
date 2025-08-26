@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import { searchAPI, reportAPI, projectAPI } from "@/lib/api";
 import toast from "react-hot-toast";
@@ -421,19 +420,16 @@ const SearchDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center min-h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      </DashboardLayout>
+      <div className="flex items-center justify-center min-h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
     );
   }
 
   if (!search) {
     return (
-      <DashboardLayout>
-        <div className="text-center py-12">
-          <MagnifyingGlassIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+      <div className="text-center py-12">
+        <MagnifyingGlassIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             Search not found
           </h3>
@@ -444,19 +440,18 @@ const SearchDetailPage: React.FC = () => {
             Back to Searches
           </Button>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-4">
-            <Button
-              variant="outline"
-              onClick={() => router.back()}
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div className="flex items-start space-x-4">
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
               leftIcon={<ArrowLeftIcon className="h-4 w-4" />}
             >
               Back
@@ -1522,9 +1517,8 @@ const SearchDetailPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
-    </DashboardLayout>
+        )}
+      </div>
+    </div>
   );
-};
-
-export default SearchDetailPage;
+};export default SearchDetailPage;

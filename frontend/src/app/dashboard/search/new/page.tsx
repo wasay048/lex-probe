@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { searchAPI } from "@/lib/api";
@@ -854,16 +853,15 @@ const NewSearchPage: React.FC = () => {
   };
 
   return (
-    <DashboardLayout>
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            New Cartel Detection Analysis
-          </h1>
-          <p className="text-gray-600">
-            Configure your search parameters to analyze potential cartel
-            behavior between companies. Enter company details, select risk
-            categories and indicators, then choose your search mode.
+    <div className="max-w-5xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          New Cartel Detection Analysis
+        </h1>
+        <p className="text-gray-600">
+          Configure your search parameters to analyze potential cartel
+          behavior between companies. Enter company details, select risk
+          categories and indicators, then choose your search mode.
           </p>
         </div>
 
@@ -1265,7 +1263,7 @@ const NewSearchPage: React.FC = () => {
           </div>
         </form>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 

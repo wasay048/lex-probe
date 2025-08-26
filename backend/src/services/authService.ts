@@ -38,6 +38,7 @@ export interface ServiceResponse<T = any> {
 export interface AuthResponse {
   success: boolean;
   message: string;
+  code?: string;
   errors?: string[];
   data?: {
     user: {
@@ -91,6 +92,21 @@ export class AuthService {
         };
       }
 
+      // Check demo request eligibility for restricted signup
+      const { demoRequestService } = await import("./demoRequestService");
+      const eligibilityCheck = await demoRequestService.checkEmailEligibility(
+        email
+      );
+
+      if (!eligibilityCheck.success || !eligibilityCheck.data?.isEligible) {
+        return {
+          success: false,
+          message:
+            "Registration is currently by invitation only. Please request a demo first.",
+          code: "DEMO_REQUEST_REQUIRED",
+        };
+      }
+
       // Validate password strength
       const passwordValidation = validatePassword(password);
       if (!passwordValidation.isValid) {
@@ -103,7 +119,9 @@ export class AuthService {
 
       // Generate a 6-digit OTP
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      const otpExpires = new Date(Date.now() + config.OTP_EXPIRES_MINUTES * 60 * 1000); // configurable
+      const otpExpires = new Date(
+        Date.now() + config.OTP_EXPIRES_MINUTES * 60 * 1000
+      ); // configurable
 
       // Create user
       const user = new User({
@@ -120,6 +138,18 @@ export class AuthService {
 
       await user.save();
 
+      // Mark demo request as having signed up
+      try {
+        const { demoRequestService } = await import("./demoRequestService");
+        await demoRequestService.markAsSignedUp(email);
+      } catch (demoUpdateError) {
+        logger.warn(
+          "Failed to update demo request signup status:",
+          demoUpdateError
+        );
+        // Don't fail registration if demo request update fails
+      }
+
       // Send OTP email (always, even in development)
       try {
         await sendOtpEmail(user.email, otp);
@@ -129,7 +159,8 @@ export class AuthService {
 
       return {
         success: true,
-        message: "Registration successful. Please check your email for the verification code.",
+        message:
+          "Registration successful. Please check your email for the verification code.",
       };
     } catch (error) {
       logger.error("Registration service error:", error);
@@ -295,7 +326,9 @@ export class AuthService {
 
       // Generate new OTP and expiration
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      const otpExpires = new Date(Date.now() + config.OTP_EXPIRES_MINUTES * 60 * 1000);
+      const otpExpires = new Date(
+        Date.now() + config.OTP_EXPIRES_MINUTES * 60 * 1000
+      );
       user.otpCode = otp;
       user.otpExpires = otpExpires;
       await user.save();

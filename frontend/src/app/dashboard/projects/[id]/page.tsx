@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import { projectAPI } from "@/lib/api";
 import toast from "react-hot-toast";
@@ -157,18 +156,15 @@ const ProjectDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <DashboardLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      </DashboardLayout>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
     );
   }
 
   if (!project) {
     return (
-      <DashboardLayout>
-        <div className="text-center py-12">
+      <div className="text-center py-12">
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             Project not found
           </h3>
@@ -183,7 +179,7 @@ const ProjectDetailPage: React.FC = () => {
             </Button>
           </Link>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
@@ -192,16 +188,15 @@ const ProjectDetailPage: React.FC = () => {
   console.log("🔍 Project ID:", project?._id);
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => router.back()}
-              className="inline-flex items-center text-gray-600 hover:text-gray-800"
-            >
-              <ArrowLeftIcon className="h-5 w-5 mr-2" />
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center text-gray-600 hover:text-gray-800"
+          >
+            <ArrowLeftIcon className="h-5 w-5 mr-2" />
               Back
             </button>
             <div className="flex items-center space-x-3">
@@ -365,7 +360,7 @@ const ProjectDetailPage: React.FC = () => {
           )}
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 
